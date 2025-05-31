@@ -58,7 +58,7 @@ export default function LoginPage() {
           <div className="mx-auto mb-4 flex items-center justify-center h-16 w-16 rounded-full bg-primary/10">
             <LogIn size={36} className="text-primary" />
           </div>
-          <CardTitle className="font-headline text-3xl text-foreground">Gemini Chat Dark</CardTitle>
+          <CardTitle className="font-headline text-3xl text-foreground">Migtech Hub Assistant</CardTitle>
           <CardDescription className="text-muted-foreground">Please login to continue</CardDescription>
         </CardHeader>
         <CardContent>
@@ -94,7 +94,7 @@ export default function LoginPage() {
           </form>
         </CardContent>
         <CardFooter className="text-center text-xs text-muted-foreground">
-          <p>Use username 'mig' and password 'mig2025'.</p>
+          
         </CardFooter>
       </Card>
     </div>

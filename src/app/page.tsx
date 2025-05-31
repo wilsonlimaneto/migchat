@@ -98,7 +98,7 @@ export default function ChatPage() {
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
       <header className="flex items-center justify-between p-3 md:p-4 border-b border-border shadow-sm sticky top-0 bg-background z-10">
-        <h1 className="text-xl font-headline font-semibold text-primary">Gemini Chat Dark</h1>
+        <h1 className="text-xl font-headline font-semibold text-primary">Migtech Hub Assistant</h1>
         <div className="flex items-center gap-1 md:gap-2">
           <Button variant="ghost" size="icon" onClick={handleClearChat} title="Clear Chat" aria-label="Clear Chat">
             <Trash2 className="h-5 w-5 text-muted-foreground hover:text-foreground" />

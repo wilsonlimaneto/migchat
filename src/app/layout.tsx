@@ -4,7 +4,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'Gemini Chat Dark',
+  title: 'Migtech Hub Assistant',
   description: 'A dark-themed chat application powered by Gemini.',
 };
 
