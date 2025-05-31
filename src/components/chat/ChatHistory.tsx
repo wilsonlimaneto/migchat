@@ -4,7 +4,7 @@
 import type { ChatMessage } from '@/lib/types';
 import ChatMessageDisplay from './ChatMessage';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useEffect, useRef }_ from 'react';
+import { useEffect, useRef } from 'react';
 
 interface ChatHistoryProps {
   messages: ChatMessage[];
