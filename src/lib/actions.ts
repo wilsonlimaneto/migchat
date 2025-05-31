@@ -22,31 +22,31 @@ export async function sendMessageToGeminiAction(
 ): Promise<{ response?: string; error?: string }> {
   const chatHistoryForApi = formatChatHistoryForApi(currentMessages, newMessageContent);
 
-  const input: SummarizeChatInput = {
-    chatHistory: chatHistoryForApi,
-  };
-
   try {
     // Artificial delay to simulate API response time for loading indicator
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Use stored instructions and prompt if available
-    const promptConfig = await getPromptEditorDataAction();
-    let fullPrompt = input.chatHistory;
-    if (promptConfig.data) {
-        // This is a simplified example. A real app would integrate these into the Genkit flow's prompt template.
-        // For summarizeChat, we are directly using the chatHistory.
-        // If we were to use a more complex flow, instructions and base prompt would be part of its definition.
-        // console.log("Using custom instructions:", promptConfig.data.instructions);
-        // console.log("Using custom base prompt:", promptConfig.data.prompt);
+    // Fetch stored instructions and prompt
+    const promptConfigResult = await getPromptEditorDataAction();
+    let instructions: string | undefined = undefined;
+    let basePrompt: string | undefined = undefined;
+
+    if (promptConfigResult.data) {
+        instructions = promptConfigResult.data.instructions;
+        basePrompt = promptConfigResult.data.prompt;
+    } else if (promptConfigResult.error) {
+        // Optionally handle error if prompt data couldn't be loaded, 
+        // or proceed with defaults defined in the flow.
+        console.warn("Could not load custom prompt data:", promptConfigResult.error);
     }
 
-
-    // The current summarizeChat flow doesn't directly use the separate instructions/prompt fields.
-    // This is a placeholder to show where they *could* be integrated.
-    // For this specific action, we'll stick to the original summarization logic.
+    const input: SummarizeChatInput = {
+      chatHistory: chatHistoryForApi,
+      instructions: instructions,
+      basePrompt: basePrompt,
+    };
+    
     const result = await summarizeChat(input);
-
 
     if (result && result.summary) {
       return { response: result.summary };
@@ -54,7 +54,7 @@ export async function sendMessageToGeminiAction(
       return { error: "Received an empty response from the AI." };
     }
   } catch (error) {
-    console.error("Error calling Gemini API:", error);
+    console.error("Error calling summarizeChat flow:", error);
     if (error instanceof Error) {
       return { error: `API Error: ${error.message}` };
     }
@@ -170,4 +170,3 @@ export async function savePromptEditorDataAction(
     return { success: false, error: "Could not save prompt data due to an unknown error." };
   }
 }
-
