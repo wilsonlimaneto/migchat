@@ -48,7 +48,7 @@ export default function ChatMessageDisplay({ message }: ChatMessageProps) {
       {!isUser && (
         <Avatar className="h-8 w-8 shrink-0">
           <AvatarImage src="https://placehold.co/40x40/D0BFFF/2F1A47.png?text=M" alt="Bot Avatar" data-ai-hint="robot face" />
-          <AvatarFallback>M</AvatarFallback>
+          <AvatarFallback className="bg-accent text-accent-foreground">M</AvatarFallback>
         </Avatar>
       )}
       <div
