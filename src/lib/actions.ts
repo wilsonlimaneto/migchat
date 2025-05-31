@@ -64,7 +64,7 @@ export async function sendMessageToGeminiAction(
 
 // --- Markdown Notes Actions ---
 
-let storedMarkdownContent = `---
+let storedMarkdownContent = `---DESCRIBE YOUR IDEAL FANTASY WORLD HERE---
 title: My Notes
 date: ${new Date().toISOString().split('T')[0]}
 tags: [markdown, demo, notes]
@@ -170,3 +170,4 @@ export async function savePromptEditorDataAction(
     return { success: false, error: "Could not save prompt data due to an unknown error." };
   }
 }
+

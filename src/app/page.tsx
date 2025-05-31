@@ -10,8 +10,8 @@ import TypingIndicator from '@/components/chat/TypingIndicator';
 import type { ChatMessage } from '@/lib/types';
 import { 
   sendMessageToGeminiAction, 
-  getMarkdownNotesAction, 
-  saveMarkdownNotesAction,
+  getMarkdownNotesAction,  // Ensure this is imported
+  saveMarkdownNotesAction, // Ensure this is imported
   getPromptEditorDataAction,
   savePromptEditorDataAction
 } from '@/lib/actions';
@@ -54,11 +54,16 @@ export default function ChatPage() {
     if (isNotesModalOpen && isAuthenticated) {
       const fetchNotes = async () => {
         setIsLoadingNotes(true);
-        const result = await getMarkdownNotesAction();
-        if (result.content !== undefined) {
-          setMarkdownContent(result.content);
-        } else if (result.error) {
-          toast({ title: "Error loading notes", description: result.error, variant: "destructive" });
+        try {
+          const result = await getMarkdownNotesAction(); // Correctly call the action
+          if (result.content !== undefined) {
+            setMarkdownContent(result.content);
+          } else if (result.error) {
+            toast({ title: "Error loading notes", description: result.error, variant: "destructive" });
+          }
+        } catch (error) { // Catch any unexpected errors during the action call
+          console.error("Failed to fetch notes:", error);
+          toast({ title: "Error loading notes", description: "An unexpected error occurred.", variant: "destructive" });
         }
         setIsLoadingNotes(false);
       };
@@ -70,12 +75,18 @@ export default function ChatPage() {
     if (isPromptEditorModalOpen && isAuthenticated) {
       const fetchPromptData = async () => {
         setIsLoadingPromptEditorData(true);
-        const result = await getPromptEditorDataAction();
-        if (result.data) {
-          setInstructionsText(result.data.instructions);
-          setPromptText(result.data.prompt);
-        } else if (result.error) {
-          toast({ title: "Error loading prompt data", description: result.error, variant: "destructive" });
+        // Corrected to use try-catch for consistency and error handling
+        try {
+          const result = await getPromptEditorDataAction();
+          if (result.data) {
+            setInstructionsText(result.data.instructions);
+            setPromptText(result.data.prompt);
+          } else if (result.error) {
+            toast({ title: "Error loading prompt data", description: result.error, variant: "destructive" });
+          }
+        } catch (error) {
+          console.error("Failed to fetch prompt data:", error);
+          toast({ title: "Error loading prompt data", description: "An unexpected error occurred.", variant: "destructive" });
         }
         setIsLoadingPromptEditorData(false);
       };
@@ -132,27 +143,39 @@ export default function ChatPage() {
 
   const handleSaveNotes = async () => {
     setIsSavingNotes(true);
-    const result = await saveMarkdownNotesAction(markdownContent);
-    if (result.success) {
-      toast({ title: "Notes Saved", description: "Your notes have been successfully saved." });
-      setIsNotesModalOpen(false);
-    } else {
-      toast({ title: "Error Saving Notes", description: result.error || "An unknown error occurred.", variant: "destructive" });
+    // Correctly call the action
+    try {
+      const result = await saveMarkdownNotesAction(markdownContent);
+      if (result.success) {
+        toast({ title: "Notes Saved", description: "Your notes have been successfully saved." });
+        setIsNotesModalOpen(false);
+      } else {
+        toast({ title: "Error Saving Notes", description: result.error || "An unknown error occurred.", variant: "destructive" });
+      }
+    } catch (error) {
+      console.error("Failed to save notes:", error);
+      toast({ title: "Error Saving Notes", description: "An unexpected error occurred.", variant: "destructive" });
     }
     setIsSavingNotes(false);
   };
 
   const handleSavePromptEditorData = async () => {
     setIsSavingPromptEditorData(true);
-    const result = await savePromptEditorDataAction({
-      instructions: instructionsText,
-      prompt: promptText,
-    });
-    if (result.success) {
-      toast({ title: "Prompt Data Saved", description: "Instructions and Prompt have been saved." });
-      setIsPromptEditorModalOpen(false);
-    } else {
-      toast({ title: "Error Saving Prompt Data", description: result.error || "An unknown error occurred.", variant: "destructive" });
+    // Corrected to use try-catch
+    try {
+      const result = await savePromptEditorDataAction({
+        instructions: instructionsText,
+        prompt: promptText,
+      });
+      if (result.success) {
+        toast({ title: "Prompt Data Saved", description: "Instructions and Prompt have been saved." });
+        setIsPromptEditorModalOpen(false);
+      } else {
+        toast({ title: "Error Saving Prompt Data", description: result.error || "An unknown error occurred.", variant: "destructive" });
+      }
+    } catch (error) {
+      console.error("Failed to save prompt data:", error);
+      toast({ title: "Error Saving Prompt Data", description: "An unexpected error occurred.", variant: "destructive" });
     }
     setIsSavingPromptEditorData(false);
   };

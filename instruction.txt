@@ -1,0 +1,49 @@
+I can't directly create or modify files in your project environment. However, I can provide you with the code you would typically use in a JavaScript/React application to read the content of a file (if it were uploaded or selected by the user) and populate a textarea with that content.
+
+Here's an example of how you might achieve this using a file input element and a textarea:
+
+```
+jsx
+import React, { useState } from 'react';
+
+const FileToTextarea = () => {
+  const [textareaContent, setTextareaContent] = useState('');
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        setTextareaContent(e.target.result);
+      };
+
+      reader.readAsText(file);
+    }
+  };
+
+  return (
+    <div>
+      <input type="file" accept=".txt" onChange={handleFileChange} />
+      <textarea
+        value={textareaContent}
+        onChange={(e) => setTextareaContent(e.target.value)}
+        rows={10}
+        cols={50}
+        placeholder="Content from instruction.txt will appear here..."
+      ></textarea>
+    </div>
+  );
+};
+
+export default FileToTextarea;
+```
+
+To use this:
+
+1.  Save this code as a `.jsx` file (e.g., `FileToTextarea.jsx`) in your project's components directory.
+2.  In the component where you want to use this functionality, import and render `FileToTextarea`.
+3.  When a user selects a `.txt` file using the file input, the content will be read and displayed in the textarea.
+
+Remember, this code assumes the user is selecting a file through a file input. If you have a different mechanism for accessing `instruction.txt`, you would need to adjust the code accordingly.
