@@ -33,7 +33,7 @@ const prompt = ai.definePrompt({
 {{/if}}
 
 {{#if markdownNotes}}
-Use the following notes as additional context for your response:
+You have access to the following notes. If the user's question pertains to the content within these notes, formulate your answer directly and exclusively from this information, in plain text.
 <markdown_notes>
 {{{markdownNotes}}}
 </markdown_notes>
@@ -42,7 +42,7 @@ Use the following notes as additional context for your response:
 {{#if basePrompt}}
 {{{basePrompt}}}
 {{else}}
-Respond to the last user message in the chat history.
+Using the provided notes (if any) and the chat history, respond to the last user message. Ensure your response is direct, in plain text, and based on the information at hand.
 {{/if}}
 
 Chat History:
