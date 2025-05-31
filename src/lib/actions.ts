@@ -6,6 +6,53 @@ import { summarizeChat, type SummarizeChatInput } from '@/ai/flows/summarize-cha
 import { promises as fs } from 'fs';
 import path from 'path';
 
+// Define file paths
+const MARKDOWN_NOTES_PATH = path.join(process.cwd(), 'user_markdown_notes.md');
+const INSTRUCTION_TEXT_PATH = path.join(process.cwd(), 'instruction.txt');
+const PROMPT_TEXT_PATH = path.join(process.cwd(), 'prompt.txt');
+
+// Default content for initial creation or if files are empty/corrupted
+const DEFAULT_MARKDOWN_CONTENT = `---DESCRIBE YOUR IDEAL FANTASY WORLD HERE---
+title: My Notes
+date: ${new Date().toISOString().split('T')[0]}
+tags: [markdown, demo, notes]
+---
+
+# Welcome to Your Markdown Notes!
+
+This is a simple note-taking feature where you can write and save your thoughts using Markdown.
+
+## Features
+- **Edit and Save**: Modify the content in this textarea and click "Save Notes".
+- **Markdown Support**: Use standard Markdown syntax like headers, lists, bold, italics, etc.
+- **Persistence**: Your notes are saved to user_markdown_notes.md.
+
+## Example Content
+
+### To-Do List
+- [ ] Item 1
+- [ ] Item 2
+- [x] Completed Item
+
+### Code Block
+\`\`\`javascript
+function greet(name) {
+  console.log(\`Hello, \${name}!\`);
+}
+greet('World');
+\`\`\`
+
+Start editing or replace this content with your own notes!
+`;
+
+const DEFAULT_INSTRUCTIONS_CONTENT = `You are a helpful AI assistant.
+Your primary goal is to provide concise and accurate summaries of the chat history provided.
+Focus on extracting key topics, decisions, and action items.
+Maintain a neutral and objective tone.`;
+
+const DEFAULT_PROMPT_CONTENT = `Based on the chat history, provide a summary.`;
+
+
 // Helper function to format chat history for the API
 function formatChatHistoryForApi(messages: ChatMessage[], newMessageContent: string): string {
   let historyString = messages
@@ -28,7 +75,6 @@ export async function sendMessageToGeminiAction(
     // Artificial delay to simulate API response time for loading indicator
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Fetch stored instructions and prompt
     const promptConfigResult = await getPromptEditorDataAction();
     let instructions: string | undefined = undefined;
     let basePrompt: string | undefined = undefined;
@@ -40,7 +86,6 @@ export async function sendMessageToGeminiAction(
         console.warn("Could not load custom prompt data:", promptConfigResult.error);
     }
 
-    // Fetch user-editable markdown notes
     const notesResult = await getMarkdownNotesAction();
     let combinedNotes = '';
 
@@ -48,7 +93,6 @@ export async function sendMessageToGeminiAction(
         combinedNotes += notesResult.content;
     }
 
-    // Read migdata.md from the project root
     try {
       const migDataPath = path.join(process.cwd(), 'migdata.md');
       const migDataContent = await fs.readFile(migDataPath, 'utf-8');
@@ -62,7 +106,6 @@ export async function sendMessageToGeminiAction(
       }
     } catch (readError) {
       console.warn("Could not load migdata.md for context:", readError);
-      // Optionally, you could return an error or proceed without this context
     }
     
     const markdownNotes: string | undefined = combinedNotes || undefined;
@@ -92,43 +135,19 @@ export async function sendMessageToGeminiAction(
 
 // --- Markdown Notes Actions ---
 
-let storedMarkdownContent = `---DESCRIBE YOUR IDEAL FANTASY WORLD HERE---
-title: My Notes
-date: ${new Date().toISOString().split('T')[0]}
-tags: [markdown, demo, notes]
----
-
-# Welcome to Your Markdown Notes!
-
-This is a simple note-taking feature where you can write and save your thoughts using Markdown.
-
-## Features
-- **Edit and Save**: Modify the content in this textarea and click "Save Notes".
-- **Markdown Support**: Use standard Markdown syntax like headers, lists, bold, italics, etc.
-- **Persistence (Simulated)**: Your notes are "saved" on the server for the duration of this session.
-
-## Example Content
-
-### To-Do List
-- [ ] Item 1
-- [ ] Item 2
-- [x] Completed Item
-
-### Code Block
-\`\`\`javascript
-function greet(name) {
-  console.log(\`Hello, \${name}!\`);
-}
-greet('World');
-\`\`\`
-
-Start editing or replace this content with your own notes!
-`;
-
 export async function getMarkdownNotesAction(): Promise<{ content?: string; error?: string }> {
   try {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    return { content: storedMarkdownContent };
+    await new Promise(resolve => setTimeout(resolve, 100)); // Simulate network delay
+    try {
+      const content = await fs.readFile(MARKDOWN_NOTES_PATH, 'utf-8');
+      return { content: content || DEFAULT_MARKDOWN_CONTENT };
+    } catch (readError: any) {
+      if (readError.code === 'ENOENT') {
+        // File doesn't exist, return default content
+        return { content: DEFAULT_MARKDOWN_CONTENT };
+      }
+      throw readError; // Re-throw other errors
+    }
   } catch (error) {
     console.error("Error fetching markdown notes:", error);
     if (error instanceof Error) {
@@ -142,8 +161,8 @@ export async function saveMarkdownNotesAction(
   newContent: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    storedMarkdownContent = newContent;
+    await new Promise(resolve => setTimeout(resolve, 200)); // Simulate network delay
+    await fs.writeFile(MARKDOWN_NOTES_PATH, newContent, 'utf-8');
     return { success: true };
   } catch (error) {
     console.error("Error saving markdown notes:", error);
@@ -156,13 +175,6 @@ export async function saveMarkdownNotesAction(
 
 // --- Prompt Editor Data Actions ---
 
-let storedInstructionsContent = `You are a helpful AI assistant.
-Your primary goal is to provide concise and accurate summaries of the chat history provided.
-Focus on extracting key topics, decisions, and action items.
-Maintain a neutral and objective tone.`;
-
-let storedPromptContent = `Based on the chat history, provide a summary.`;
-
 interface PromptEditorData {
   instructions: string;
   prompt: string;
@@ -170,8 +182,30 @@ interface PromptEditorData {
 
 export async function getPromptEditorDataAction(): Promise<{ data?: PromptEditorData; error?: string }> {
   try {
-    await new Promise(resolve => setTimeout(resolve, 200)); // Simulate fetching delay
-    return { data: { instructions: storedInstructionsContent, prompt: storedPromptContent } };
+    await new Promise(resolve => setTimeout(resolve, 100)); // Simulate network delay
+    let instructions = DEFAULT_INSTRUCTIONS_CONTENT;
+    let prompt = DEFAULT_PROMPT_CONTENT;
+
+    try {
+      instructions = await fs.readFile(INSTRUCTION_TEXT_PATH, 'utf-8');
+    } catch (readError: any) {
+      if (readError.code !== 'ENOENT') {
+        console.warn(`Error reading ${INSTRUCTION_TEXT_PATH}, using default. Error: ${readError.message}`);
+      }
+      // If ENOENT or other read error, default is already set
+    }
+
+    try {
+      prompt = await fs.readFile(PROMPT_TEXT_PATH, 'utf-8');
+    } catch (readError: any) {
+      if (readError.code !== 'ENOENT') {
+        console.warn(`Error reading ${PROMPT_TEXT_PATH}, using default. Error: ${readError.message}`);
+      }
+      // If ENOENT or other read error, default is already set
+    }
+    
+    return { data: { instructions: instructions || DEFAULT_INSTRUCTIONS_CONTENT, prompt: prompt || DEFAULT_PROMPT_CONTENT } };
+
   } catch (error) {
     console.error("Error fetching prompt editor data:", error);
     if (error instanceof Error) {
@@ -185,10 +219,9 @@ export async function savePromptEditorDataAction(
   data: PromptEditorData
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    await new Promise(resolve => setTimeout(resolve, 400)); // Simulate saving delay
-    storedInstructionsContent = data.instructions;
-    storedPromptContent = data.prompt;
-    // console.log("Prompt editor data saved (simulated):", data);
+    await new Promise(resolve => setTimeout(resolve, 200)); // Simulate network delay
+    await fs.writeFile(INSTRUCTION_TEXT_PATH, data.instructions, 'utf-8');
+    await fs.writeFile(PROMPT_TEXT_PATH, data.prompt, 'utf-8');
     return { success: true };
   } catch (error) {
     console.error("Error saving prompt editor data:", error);
@@ -198,4 +231,3 @@ export async function savePromptEditorDataAction(
     return { success: false, error: "Could not save prompt data due to an unknown error." };
   }
 }
-
