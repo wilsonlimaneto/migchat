@@ -28,15 +28,15 @@ body {
     --muted-foreground: 0 0% 65%; /* Dimmed text */
 
     /* Accent color for bot messages and other UI accents */
-    --accent: 260 100% 87%; /* Light Lavender #D0BFFF */
-    --accent-foreground: 260 30% 25%; /* Darker lavender/gray text on Light Lavender for good contrast */
+    --accent: 225 73% 63%; /* Royal Blue */
+    --accent-foreground: 0 0% 100%; /* White text on Royal Blue */
 
     --destructive: 0 74.2% 50.2%; /* A brighter red for destructive actions */
     --destructive-foreground: 0 0% 98%;
 
     --border: 0 0% 30%;
     --input: 0 0% 30%; /* Used for input fields background */
-    --ring: 260 100% 75%; /* Ring color for focus states, can be related to accent */
+    --ring: 225 73% 55%; /* Ring color for focus states, related to accent */
     
     --radius: 0.5rem; /* Keep existing radius */
 
@@ -50,12 +50,12 @@ body {
     /* Sidebar specific colors, kept from original, might not be heavily used in this app */
     --sidebar-background: 0 0% 18%; /* Darker sidebar background */
     --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 260 100% 87%; /* Using accent for sidebar primary highlights */
-    --sidebar-primary-foreground: 260 30% 25%;
+    --sidebar-primary: 225 73% 63%; /* Using accent for sidebar primary highlights */
+    --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 22%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 0 0% 25%;
-    --sidebar-ring: 260 100% 75%;
+    --sidebar-ring: 225 73% 55%;
   }
 }
 
@@ -129,3 +129,4 @@ body {
 .markdown-content hr {
     @apply my-4 border-border;
 }
+
