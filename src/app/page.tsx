@@ -8,11 +8,18 @@ import ChatHistory from '@/components/chat/ChatHistory';
 import ChatInput from '@/components/chat/ChatInput';
 import TypingIndicator from '@/components/chat/TypingIndicator';
 import type { ChatMessage } from '@/lib/types';
-import { sendMessageToGeminiAction, getMarkdownNotesAction, saveMarkdownNotesAction } from '@/lib/actions';
+import { 
+  sendMessageToGeminiAction, 
+  getMarkdownNotesAction, 
+  saveMarkdownNotesAction,
+  getPromptEditorDataAction,
+  savePromptEditorDataAction
+} from '@/lib/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Trash2, LogOut, MessageSquareDashed, Loader2, Notebook } from 'lucide-react';
+import { Trash2, LogOut, MessageSquareDashed, Loader2, Notebook, FileText } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 
 export default function ChatPage() {
   const router = useRouter();
@@ -26,6 +33,12 @@ export default function ChatPage() {
   const [markdownContent, setMarkdownContent] = useState('');
   const [isLoadingNotes, setIsLoadingNotes] = useState(false);
   const [isSavingNotes, setIsSavingNotes] = useState(false);
+
+  const [isPromptEditorModalOpen, setIsPromptEditorModalOpen] = useState(false);
+  const [instructionsText, setInstructionsText] = useState('');
+  const [promptText, setPromptText] = useState('');
+  const [isLoadingPromptEditorData, setIsLoadingPromptEditorData] = useState(false);
+  const [isSavingPromptEditorData, setIsSavingPromptEditorData] = useState(false);
   
   useEffect(() => {
     const authStatus = localStorage.getItem('gemini-chat-auth');
@@ -42,7 +55,7 @@ export default function ChatPage() {
       const fetchNotes = async () => {
         setIsLoadingNotes(true);
         const result = await getMarkdownNotesAction();
-        if (result.content !== undefined) { // Check for undefined to allow empty string
+        if (result.content !== undefined) {
           setMarkdownContent(result.content);
         } else if (result.error) {
           toast({ title: "Error loading notes", description: result.error, variant: "destructive" });
@@ -52,6 +65,23 @@ export default function ChatPage() {
       fetchNotes();
     }
   }, [isNotesModalOpen, isAuthenticated, toast]);
+
+  useEffect(() => {
+    if (isPromptEditorModalOpen && isAuthenticated) {
+      const fetchPromptData = async () => {
+        setIsLoadingPromptEditorData(true);
+        const result = await getPromptEditorDataAction();
+        if (result.data) {
+          setInstructionsText(result.data.instructions);
+          setPromptText(result.data.prompt);
+        } else if (result.error) {
+          toast({ title: "Error loading prompt data", description: result.error, variant: "destructive" });
+        }
+        setIsLoadingPromptEditorData(false);
+      };
+      fetchPromptData();
+    }
+  }, [isPromptEditorModalOpen, isAuthenticated, toast]);
 
   const handleSendMessage = async (content: string) => {
     const newMessage: ChatMessage = {
@@ -112,6 +142,21 @@ export default function ChatPage() {
     setIsSavingNotes(false);
   };
 
+  const handleSavePromptEditorData = async () => {
+    setIsSavingPromptEditorData(true);
+    const result = await savePromptEditorDataAction({
+      instructions: instructionsText,
+      prompt: promptText,
+    });
+    if (result.success) {
+      toast({ title: "Prompt Data Saved", description: "Instructions and Prompt have been saved." });
+      setIsPromptEditorModalOpen(false);
+    } else {
+      toast({ title: "Error Saving Prompt Data", description: result.error || "An unknown error occurred.", variant: "destructive" });
+    }
+    setIsSavingPromptEditorData(false);
+  };
+
   if (isAuthLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground p-4">
@@ -130,6 +175,9 @@ export default function ChatPage() {
       <header className="flex items-center justify-between p-3 md:p-4 border-b border-border shadow-sm sticky top-0 bg-background z-10">
         <h1 className="text-xl font-headline font-semibold text-primary">Migtech Hub Assistant</h1>
         <div className="flex items-center gap-1 md:gap-2">
+          <Button variant="ghost" size="icon" onClick={() => setIsPromptEditorModalOpen(true)} title="Edit Prompts" aria-label="Edit Prompts">
+            <FileText className="h-5 w-5 text-muted-foreground hover:text-foreground" />
+          </Button>
           <Button variant="ghost" size="icon" onClick={() => setIsNotesModalOpen(true)} title="Edit Notes" aria-label="Edit Notes">
             <Notebook className="h-5 w-5 text-muted-foreground hover:text-foreground" />
           </Button>
@@ -157,6 +205,7 @@ export default function ChatPage() {
       
       <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
 
+      {/* Markdown Notes Dialog */}
       <Dialog open={isNotesModalOpen} onOpenChange={setIsNotesModalOpen}>
         <DialogContent className="sm:max-w-[700px] h-[80vh] flex flex-col p-0">
           <DialogHeader className="p-6 pb-2">
@@ -186,6 +235,58 @@ export default function ChatPage() {
             </Button>
             <Button onClick={handleSaveNotes} disabled={isSavingNotes || isLoadingNotes}>
               {isSavingNotes ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : 'Save Notes'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Prompt Editor Dialog */}
+      <Dialog open={isPromptEditorModalOpen} onOpenChange={setIsPromptEditorModalOpen}>
+        <DialogContent className="sm:max-w-[700px] h-[80vh] flex flex-col p-0">
+          <DialogHeader className="p-6 pb-2">
+            <DialogTitle className="text-2xl">Edit Prompt Configuration</DialogTitle>
+            <DialogDescription>
+              Modify the AI's instructions and base prompt. Changes are persisted (simulated).
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 px-6 pb-2 flex flex-col min-h-0 space-y-4 overflow-y-auto">
+            {isLoadingPromptEditorData ? (
+              <div className="flex items-center justify-center h-full">
+                <Loader2 className="animate-spin h-10 w-10 text-primary" />
+              </div>
+            ) : (
+              <>
+                <div className="space-y-1">
+                  <Label htmlFor="instructionsText" className="text-sm font-medium">Instructions</Label>
+                  <Textarea
+                    id="instructionsText"
+                    value={instructionsText}
+                    onChange={(e) => setInstructionsText(e.target.value)}
+                    className="w-full min-h-[200px] resize-y border rounded-md p-3 text-sm focus-visible:ring-primary"
+                    placeholder="Enter AI instructions here..."
+                    aria-label="AI Instructions Editor"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="promptText" className="text-sm font-medium">Base Prompt</Label>
+                  <Textarea
+                    id="promptText"
+                    value={promptText}
+                    onChange={(e) => setPromptText(e.target.value)}
+                    className="w-full min-h-[200px] resize-y border rounded-md p-3 text-sm focus-visible:ring-primary"
+                    placeholder="Enter base prompt for the AI here..."
+                    aria-label="AI Base Prompt Editor"
+                  />
+                </div>
+              </>
+            )}
+          </div>
+          <DialogFooter className="p-6 pt-2 border-t mt-auto">
+            <Button variant="outline" onClick={() => setIsPromptEditorModalOpen(false)} disabled={isSavingPromptEditorData}>
+              Cancel
+            </Button>
+            <Button onClick={handleSavePromptEditorData} disabled={isSavingPromptEditorData || isLoadingPromptEditorData}>
+              {isSavingPromptEditorData ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : 'Save Configuration'}
             </Button>
           </DialogFooter>
         </DialogContent>

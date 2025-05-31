@@ -30,7 +30,24 @@ export async function sendMessageToGeminiAction(
     // Artificial delay to simulate API response time for loading indicator
     await new Promise(resolve => setTimeout(resolve, 1000));
     
+    // Use stored instructions and prompt if available
+    const promptConfig = await getPromptEditorDataAction();
+    let fullPrompt = input.chatHistory;
+    if (promptConfig.data) {
+        // This is a simplified example. A real app would integrate these into the Genkit flow's prompt template.
+        // For summarizeChat, we are directly using the chatHistory.
+        // If we were to use a more complex flow, instructions and base prompt would be part of its definition.
+        // console.log("Using custom instructions:", promptConfig.data.instructions);
+        // console.log("Using custom base prompt:", promptConfig.data.prompt);
+    }
+
+
+    // The current summarizeChat flow doesn't directly use the separate instructions/prompt fields.
+    // This is a placeholder to show where they *could* be integrated.
+    // For this specific action, we'll stick to the original summarization logic.
     const result = await summarizeChat(input);
+
+
     if (result && result.summary) {
       return { response: result.summary };
     } else {
@@ -47,7 +64,6 @@ export async function sendMessageToGeminiAction(
 
 // --- Markdown Notes Actions ---
 
-// Simulated server-side storage for Markdown notes
 let storedMarkdownContent = `---
 title: My Notes
 date: ${new Date().toISOString().split('T')[0]}
@@ -83,7 +99,6 @@ Start editing or replace this content with your own notes!
 
 export async function getMarkdownNotesAction(): Promise<{ content?: string; error?: string }> {
   try {
-    // Simulate fetching delay
     await new Promise(resolve => setTimeout(resolve, 300));
     return { content: storedMarkdownContent };
   } catch (error) {
@@ -99,11 +114,8 @@ export async function saveMarkdownNotesAction(
   newContent: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    // Simulate saving delay
     await new Promise(resolve => setTimeout(resolve, 500));
     storedMarkdownContent = newContent;
-    // In a real app, you would save to a database or file system here.
-    // console.log("Markdown notes saved (simulated):", newContent);
     return { success: true };
   } catch (error) {
     console.error("Error saving markdown notes:", error);
@@ -111,5 +123,50 @@ export async function saveMarkdownNotesAction(
       return { success: false, error: `Could not save notes: ${error.message}` };
     }
     return { success: false, error: "Could not save notes due to an unknown error." };
+  }
+}
+
+// --- Prompt Editor Data Actions ---
+
+let storedInstructionsContent = `You are a helpful AI assistant.
+Your primary goal is to provide concise and accurate summaries of the chat history provided.
+Focus on extracting key topics, decisions, and action items.
+Maintain a neutral and objective tone.`;
+
+let storedPromptContent = `Based on the chat history, provide a summary.`;
+
+interface PromptEditorData {
+  instructions: string;
+  prompt: string;
+}
+
+export async function getPromptEditorDataAction(): Promise<{ data?: PromptEditorData; error?: string }> {
+  try {
+    await new Promise(resolve => setTimeout(resolve, 200)); // Simulate fetching delay
+    return { data: { instructions: storedInstructionsContent, prompt: storedPromptContent } };
+  } catch (error) {
+    console.error("Error fetching prompt editor data:", error);
+    if (error instanceof Error) {
+      return { error: `Could not load prompt data: ${error.message}` };
+    }
+    return { error: "Could not load prompt data due to an unknown error." };
+  }
+}
+
+export async function savePromptEditorDataAction(
+  data: PromptEditorData
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    await new Promise(resolve => setTimeout(resolve, 400)); // Simulate saving delay
+    storedInstructionsContent = data.instructions;
+    storedPromptContent = data.prompt;
+    // console.log("Prompt editor data saved (simulated):", data);
+    return { success: true };
+  } catch (error) {
+    console.error("Error saving prompt editor data:", error);
+    if (error instanceof Error) {
+      return { success: false, error: `Could not save prompt data: ${error.message}` };
+    }
+    return { success: false, error: "Could not save prompt data due to an unknown error." };
   }
 }
