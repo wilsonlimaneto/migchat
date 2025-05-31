@@ -44,3 +44,72 @@ export async function sendMessageToGeminiAction(
     return { error: "An unknown error occurred while contacting the AI." };
   }
 }
+
+// --- Markdown Notes Actions ---
+
+// Simulated server-side storage for Markdown notes
+let storedMarkdownContent = `---
+title: My Notes
+date: ${new Date().toISOString().split('T')[0]}
+tags: [markdown, demo, notes]
+---
+
+# Welcome to Your Markdown Notes!
+
+This is a simple note-taking feature where you can write and save your thoughts using Markdown.
+
+## Features
+- **Edit and Save**: Modify the content in this textarea and click "Save Notes".
+- **Markdown Support**: Use standard Markdown syntax like headers, lists, bold, italics, etc.
+- **Persistence (Simulated)**: Your notes are "saved" on the server for the duration of this session.
+
+## Example Content
+
+### To-Do List
+- [ ] Item 1
+- [ ] Item 2
+- [x] Completed Item
+
+### Code Block
+\`\`\`javascript
+function greet(name) {
+  console.log(\`Hello, \${name}!\`);
+}
+greet('World');
+\`\`\`
+
+Start editing or replace this content with your own notes!
+`;
+
+export async function getMarkdownNotesAction(): Promise<{ content?: string; error?: string }> {
+  try {
+    // Simulate fetching delay
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return { content: storedMarkdownContent };
+  } catch (error) {
+    console.error("Error fetching markdown notes:", error);
+    if (error instanceof Error) {
+      return { error: `Could not load notes: ${error.message}` };
+    }
+    return { error: "Could not load notes due to an unknown error." };
+  }
+}
+
+export async function saveMarkdownNotesAction(
+  newContent: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Simulate saving delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    storedMarkdownContent = newContent;
+    // In a real app, you would save to a database or file system here.
+    // console.log("Markdown notes saved (simulated):", newContent);
+    return { success: true };
+  } catch (error) {
+    console.error("Error saving markdown notes:", error);
+    if (error instanceof Error) {
+      return { success: false, error: `Could not save notes: ${error.message}` };
+    }
+    return { success: false, error: "Could not save notes due to an unknown error." };
+  }
+}
