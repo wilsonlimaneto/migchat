@@ -35,15 +35,23 @@ export async function sendMessageToGeminiAction(
         instructions = promptConfigResult.data.instructions;
         basePrompt = promptConfigResult.data.prompt;
     } else if (promptConfigResult.error) {
-        // Optionally handle error if prompt data couldn't be loaded, 
-        // or proceed with defaults defined in the flow.
         console.warn("Could not load custom prompt data:", promptConfigResult.error);
+    }
+
+    // Fetch markdown notes
+    const notesResult = await getMarkdownNotesAction();
+    let markdownNotes: string | undefined = undefined;
+    if (notesResult.content) {
+        markdownNotes = notesResult.content;
+    } else if (notesResult.error) {
+        console.warn("Could not load markdown notes for context:", notesResult.error);
     }
 
     const input: SummarizeChatInput = {
       chatHistory: chatHistoryForApi,
       instructions: instructions,
       basePrompt: basePrompt,
+      markdownNotes: markdownNotes,
     };
     
     const result = await summarizeChat(input);
