@@ -3,6 +3,8 @@
 
 import type { ChatMessage } from '@/lib/types';
 import { summarizeChat, type SummarizeChatInput } from '@/ai/flows/summarize-chat';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 // Helper function to format chat history for the API
 function formatChatHistoryForApi(messages: ChatMessage[], newMessageContent: string): string {
@@ -38,14 +40,32 @@ export async function sendMessageToGeminiAction(
         console.warn("Could not load custom prompt data:", promptConfigResult.error);
     }
 
-    // Fetch markdown notes
+    // Fetch user-editable markdown notes
     const notesResult = await getMarkdownNotesAction();
-    let markdownNotes: string | undefined = undefined;
+    let combinedNotes = '';
+
     if (notesResult.content) {
-        markdownNotes = notesResult.content;
-    } else if (notesResult.error) {
-        console.warn("Could not load markdown notes for context:", notesResult.error);
+        combinedNotes += notesResult.content;
     }
+
+    // Read migdata.md from the project root
+    try {
+      const migDataPath = path.join(process.cwd(), 'migdata.md');
+      const migDataContent = await fs.readFile(migDataPath, 'utf-8');
+      if (migDataContent) {
+        if (combinedNotes) {
+          combinedNotes += '\n\n--- Additional System Context (migdata.md) ---\n';
+        } else {
+            combinedNotes = '--- Additional System Context (migdata.md) ---\n';
+        }
+        combinedNotes += migDataContent;
+      }
+    } catch (readError) {
+      console.warn("Could not load migdata.md for context:", readError);
+      // Optionally, you could return an error or proceed without this context
+    }
+    
+    const markdownNotes: string | undefined = combinedNotes || undefined;
 
     const input: SummarizeChatInput = {
       chatHistory: chatHistoryForApi,
@@ -178,3 +198,4 @@ export async function savePromptEditorDataAction(
     return { success: false, error: "Could not save prompt data due to an unknown error." };
   }
 }
+
