@@ -13,6 +13,8 @@ const PROMPT_TEXT_PATH = path.join(process.cwd(), 'prompt.txt');
 
 // Default content for initial creation or if files are empty/corrupted
 const DEFAULT_MARKDOWN_CONTENT = `
+
+
 O que é a Academic Evaluation? 
 
 A Academic Evaluation, ou Avaliação Acadêmica, é um dos primeiros e mais importantes passos para dentistas formados fora dos Estados Unidos que desejam revalidar seu diploma no país. Trata-se de um processo obrigatório de análise do histórico acadêmico e do diploma de graduação obtido no exterior, feito por uma empresa especializada e autorizada. 
@@ -385,7 +387,7 @@ MIG GO
 
 Oferecemos suporte completo para a transição profissional para os EUA por meio do pacote MIG GO, com assistência personalizada e desenvolvimento de estratégias e documentos adaptados para o seu caso. O acompanhamento é estruturado em quatro módulos principais. O primeiro módulo é o Módulo de Revalidação de Diploma, onde a equipe MigTech acompanha o cliente de perto em todo o processo de revalidação do diploma nos EUA, oferecendo materiais atualizados e conduzindo duas reuniões para construção e atualização da jornada. Além disso, é fornecido um relatório estratégico profissional. Como bônus, o cliente recebe uma hora de mentoria com um mentor certificado. 
 
-O segundo módulo são os Serviços de Edição, que incluem o desenvolvimento e edição do currículo (até 3 páginas), tradução ou desenvolvimento do personal statement e tradução ou edição de até 3 cartas de recomendação.  
+O segundo módulo são os Serviços de Edição, que incluem edição e ajustes do currículo (até 3 páginas), tradução ou desenvolvimento do personal statement e tradução ou edição de até 3 cartas de recomendação.  
 
 O terceiro módulo, o Módulo de Imigração, engloba a análise do perfil do cliente e definição da estratégia para o processo de visto com um advogado licenciado nos EUA. Esse módulo também envolve a estruturação dos documentos necessários para o visto, o desenvolvimento do plano profissional, a elaboração da petição de visto e o acompanhamento contínuo durante todo o processo imigratório. Vale destacar que as taxas consulares e custos de tradução não estão inclusos no valor do pacote. 
 
@@ -436,6 +438,8 @@ Certifique-se de que seu currículo seja claro, conciso e fácil de ler. Persona
 Personal Statement/ Letter of Intent 
 
 O personal statement é um importantíssimo documento para o pacote de aplicação para uma instituição americana. É nessa carta o cliente terá a oportunidade de se apresentar e de contar a sua história aos avaliadores; de se destacar e mostrar por que é a pessoa certa para ser admitida no programa. Orientamos que ele dedique tempo e esforço para criar um personal statement forte e convincente!   
+ 
+O time interno elabora o Personal Statement, um documento pessoal que conta a trajetória do cliente, traz a proposta imigratória do cliente e outros pontos fundamentais e muito importantes. O documento é elaborado com base em um questionário que é enviado antecipadamente ao cliente e é fundamental ter a colaboração e comprometimento do cliente para elaboração e estruturação do documento. 
 
 Dicas para um Personal Statement forte: 
 
@@ -631,6 +635,8 @@ Autodeclaração
 
     Contrato social (se houver). 
 
+Carta do contador  
+
   
 
 2. Cartas de Recomendação (Support Letters) 
@@ -758,7 +764,7 @@ Estrutura de Documentação para o F1
 
 1.Introdução ao Visto EB2-NIW 
 
-    O visto EB2-NIW (National Interest Waiver) é uma categoria de visto de imigração dos Estados Unidos que permite que profissionais qualificados, incluindo aqueles com grau avançado ou habilidades excepcionais em áreas como ciência, arte, negócios ou educação, imigram para os EUA sem a necessidade de uma oferta de emprego ou de um empregador patrocinador, desde que o beneficiário demonstre que sua imigração é de interesse nacional para os Estados Unidos. 
+    O visto EB2-NIW (Habilidade Excepcional - National Interest Waiver) é uma categoria de visto de imigração dos Estados Unidos que permite que profissionais qualificados, incluindo aqueles com grau avançado ou habilidades excepcionais em áreas como ciência, arte, negócios ou educação, imigram para os EUA sem a necessidade de uma oferta de emprego ou de um empregador patrocinador, desde que o beneficiário demonstre que sua imigração é de interesse nacional para os Estados Unidos. 
 
 Critérios para Qualificação: 
 
@@ -834,7 +840,13 @@ Na MIG, oferecemos uma oportunidade para nossos clientes participarem de uma reu
 
  
 
-Essa consulta tem como objetivo esclarecer todas as dúvidas em relação ao processo do EB2-NIW, incluindo os requisitos específicos, os documentos necessários, e o que é esperado de cada candidato para garantir o sucesso na aplicação. Além disso, a advogada também estará à disposição para responder a quaisquer perguntas relacionadas ao processo de documentação, ajudando os clientes a entenderem como organizar e reunir os documentos necessários para fortalecer sua aplicação. 
+Essa consulta tem como objetivo esclarecer todas as dúvidas em relação ao processo do EB2-NIW, incluindo os requisitos específicos, os documentos necessários, e o que é esperado de cada candidato para garantir o sucesso na aplicação.  
+ 
+Além do EB2-NIW, a advogada também explora o visto EB1-A, destinado a profissionais com habilidades extraordinárias reconhecidas em sua área de atuação, explicando os critérios exigidos e as vantagens desse tipo de aplicação. 
+Durante a conversa, são esclarecidas todas as dúvidas em relação aos dois processos, incluindo os requisitos específicos, os documentos necessários e o que é esperado de cada candidato para garantir o sucesso na aplicação. 
+ 
+
+A advogada também estará à disposição para responder a quaisquer perguntas relacionadas ao processo de documentação, ajudando os clientes a entenderem como organizar e reunir os documentos necessários para fortalecer sua aplicação. 
 
  
 
@@ -990,9 +1002,9 @@ Documentos de responsabilidade do time jurídico - backoffice e paralegals:
 
 Documentos de responsabilidade do advogado: 
 
-    Personal Statement; 
+    Personal Statement (revisão); 
 
-    Petition letter/cover letter. 
+    Petition letter/cover letter.higi 
 
  
 
@@ -1066,7 +1078,7 @@ Finalidade:
 
     Opcional, mas recomendado para monitoramento rápido. 
 
- 
+Formulário ETA 9089/ETA750B. 
 
 Por fim, a escolha correta do formulário, seu preenchimento preciso e sua submissão acompanhada da documentação adequada são passos essenciais para: 
 
@@ -1936,7 +1948,7 @@ Guardar o DENTPIN com segurança:
 
     O DENTPIN é uma informação sensível e deve ser mantido de forma segura, já que será usado para vários processos ao longo de sua carreira odontológica. 
 
-Forma 
+ 
 
 Pontos Importantes sobre o DENTPIN: 
 
@@ -1962,7 +1974,7 @@ Como responder a um RFE:
 
     Verifique se os documentos estão completos e corretos antes de enviar. 
 
-Forma 
+ 
 
 Pontos Importantes: 
 
@@ -2209,6 +2221,10 @@ O suporte pode ser acessado via WhatsApp pelo número +55 27 99756-3402, de segu
 Atuamos principalmente quando somos acionados, mas em alguns casos específicos também entramos em contato proativamente, especialmente em situações que envolvem atrasos, pendências ou algum acompanhamento mais próximo. 
 
 Nosso compromisso é garantir que ninguém se sinta sozinho ou perdido no caminho. 
+
+Casos de Sucesso da MIG  
+
+A MIGTech tem casos de sucesso de clientes que já possuem o processo imigratório aprovado e clientes que já estão dentro de universidades revalidando o diploma. 
 `;
 
 const DEFAULT_INSTRUCTIONS_CONTENT = `Voce conhece em detalhes os processos de imigração e cidadania nos Estados Unidos, para dentistas brasileiros. Gerar uma resposta em formato plain-text paras as perguntas feitas a você`;
