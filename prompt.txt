@@ -1,1 +1,1 @@
-Responda em texto puro de forma completa com toda e qualquer informação que tiver no contexto algo responda como sendo seu conhecimento.
+Responda à pergunta passada em texto puro de forma completa com toda e qualquer informação que tiver no contexto algo responda como sendo seu conhecimento.

@@ -2,7 +2,7 @@
 "use server";
 
 import type { ChatMessage } from '@/lib/types';
-import { summarizeChat, type SummarizeChatInput } from '@/ai/flows/summarize-chat';
+import { generateChatResponse, type ChatResponseInput } from '@/ai/flows/summarize-chat';
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -45,21 +45,18 @@ greet('World');
 Start editing or replace this content with your own notes!
 `;
 
-const DEFAULT_INSTRUCTIONS_CONTENT = `You are a helpful AI assistant.
-Your primary goal is to provide concise and accurate summaries of the chat history provided.
-Focus on extracting key topics, decisions, and action items.
-Maintain a neutral and objective tone.`;
+const DEFAULT_INSTRUCTIONS_CONTENT = `Voce conhece em detalhes os processos de imigração e cidadania nos Estados Unidos, para dentistas brasileiros. Gerar uma resposta em formato plain-text paras as perguntas feitas a você`;
 
-const DEFAULT_PROMPT_CONTENT = `Based on the chat history, provide a summary.`;
+const DEFAULT_PROMPT_CONTENT = `Responda à pergunta feita baseado no texto passado como contexto.`;
 
 
 // Helper function to format chat history for the API
 function formatChatHistoryForApi(messages: ChatMessage[], newMessageContent: string): string {
   let historyString = messages
     .map(msg => `${msg.role === 'user' ? 'User' : 'Bot'}: ${msg.content}`)
-    .join('\n');
+    .join(' ');
   if (historyString) {
-    historyString += '\n';
+    historyString += ' ';
   }
   historyString += `User: ${newMessageContent}`;
   return historyString;
@@ -92,40 +89,25 @@ export async function sendMessageToGeminiAction(
     if (notesResult.content) {
         combinedNotes += notesResult.content;
     }
-
-    try {
-      const migDataPath = path.join(process.cwd(), 'migdata.md');
-      const migDataContent = await fs.readFile(migDataPath, 'utf-8');
-      if (migDataContent) {
-        if (combinedNotes) {
-          combinedNotes += '\n\n--- Additional System Context (migdata.md) ---\n';
-        } else {
-            combinedNotes = '--- Additional System Context (migdata.md) ---\n';
-        }
-        combinedNotes += migDataContent;
-      }
-    } catch (readError) {
-      console.warn("Could not load migdata.md for context:", readError);
-    }
     
     const markdownNotes: string | undefined = combinedNotes || undefined;
 
-    const input: SummarizeChatInput = {
+    const input: ChatResponseInput = {
       chatHistory: chatHistoryForApi,
       instructions: instructions,
       basePrompt: basePrompt,
       markdownNotes: markdownNotes,
     };
     
-    const result = await summarizeChat(input);
+    const result = await generateChatResponse(input);
 
-    if (result && result.summary) {
-      return { response: result.summary };
+    if (result && result.response) {
+      return { response: result.response };
     } else {
       return { error: "Received an empty response from the AI." };
     }
   } catch (error) {
-    console.error("Error calling summarizeChat flow:", error);
+    console.error("Error calling generateChatResponse flow:", error);
     if (error instanceof Error) {
       return { error: `API Error: ${error.message}` };
     }
