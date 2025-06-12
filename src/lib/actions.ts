@@ -7,7 +7,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 // Define file paths
-const MARKDOWN_NOTES_PATH = path.join(process.cwd(), 'user_markdown_notes.md');
+const MARKDOWN_NOTES_PATH = path.join('/tmp', 'user_markdown_notes.md');
 const INSTRUCTION_TEXT_PATH = path.join(process.cwd(), 'instruction.txt');
 const PROMPT_TEXT_PATH = path.join(process.cwd(), 'prompt.txt');
 
